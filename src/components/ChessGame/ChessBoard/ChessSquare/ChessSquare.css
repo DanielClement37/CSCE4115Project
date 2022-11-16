@@ -1,0 +1,21 @@
+.square {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  font-size: 10px;
+  text-align: center;
+  height: 50px;
+  width: 50px;
+}
+
+.light-square {
+  background-color: rgb(174, 185, 194);
+}
+
+.dark-square {
+  background-color: darkslategrey;
+}
+
+.move {
+  background-image: url(https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.iconsdb.com%2Ficons%2Fdownload%2Fred%2Fcircle-outline-48.png&f=1&nofb=1);
+  
+}
