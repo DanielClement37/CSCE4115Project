@@ -57,7 +57,9 @@ export const GenerateMoves = (position: Position): Move[] => {
           );
           break;
         case PieceType.KING:
-          legalMoves.push( ...GenKingMoves(squares, i, squares[i].color, inCheck));
+          legalMoves.push(
+            ...GenKingMoves(squares, i, squares[i].color, inCheck)
+          );
           break;
         case PieceType.EMPTY:
         default:
@@ -102,68 +104,113 @@ const GenKingMoves = (
   inCheck: Boolean
 ): Move[] => {
   let legalMoves: Move[] = new Array(0);
-  let psuedoMoves:Move[] = new Array(0);
+  let psuedoMoves: Move[] = new Array(0);
   let [x, y] = ConvertToXY(from);
-  //Take King off the board for calculating normal move attacking squares 
+  //Take King off the board for calculating normal move attacking squares
   let kingBoard = board;
   kingBoard[from].type = PieceType.EMPTY;
   kingBoard[from].color = Color.NONE;
 
   //get psuedo moves
   psuedoMoves = [
-    CreateMove(color, from, ConvertToIndex(x+1, y +1), PieceType.KING, MoveType.UNKNOWN),   //top right
-    CreateMove(color, from, ConvertToIndex(x+1, y), PieceType.KING, MoveType.UNKNOWN),      //right
-    CreateMove(color, from, ConvertToIndex(x+1, y -1), PieceType.KING, MoveType.UNKNOWN),   //bottom right
-    CreateMove(color, from, ConvertToIndex(x, y +1), PieceType.KING, MoveType.UNKNOWN),     //up
-    CreateMove(color, from, ConvertToIndex(x, y -1), PieceType.KING, MoveType.UNKNOWN),     //down
-    CreateMove(color, from, ConvertToIndex(x-1, y +1), PieceType.KING, MoveType.UNKNOWN),   //top left
-    CreateMove(color, from, ConvertToIndex(x-1, y ), PieceType.KING, MoveType.UNKNOWN),     //left
-    CreateMove(color, from, ConvertToIndex(x-1, y -1), PieceType.KING, MoveType.UNKNOWN)    //bottom left
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x + 1, y + 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //top right
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x + 1, y),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //right
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x + 1, y - 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //bottom right
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x, y + 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //up
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x, y - 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //down
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x - 1, y + 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //top left
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x - 1, y),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //left
+    CreateMove(
+      color,
+      from,
+      ConvertToIndex(x - 1, y - 1),
+      PieceType.KING,
+      MoveType.UNKNOWN
+    ), //bottom left
   ];
-  
-  // Regular Moves (non castling) 
-  psuedoMoves.forEach(move =>{
+
+  // Regular Moves (non castling)
+  psuedoMoves.forEach((move) => {
     //Empty Squares
-    if(board[move.toSquare].type === PieceType.EMPTY && !IsAttacked(kingBoard, from, color)[0]){
+    if (
+      board[move.toSquare].type === PieceType.EMPTY &&
+      !IsAttacked(kingBoard, move.toSquare, color)[0]
+    ) {
+      legalMoves.push(move);
+    } else if (
+      board[move.toSquare].type !== PieceType.BOUNDARY &&
+      board[move.toSquare].color !== color &&
+      !IsAttacked(kingBoard, move.toSquare, color)[0]
+    ) {
+      // Capture
       legalMoves.push(move);
     }
-    //Capture Squares
+  });
+
+  // Castling
+  let whiteKingsideRook = 98;
+  let whiteQueensideRook = 91;
+  let blackKingsideRook = 28;
+  let blackQueensideRook = 21;
+  let whiteKingStart = 95;
+  let blackKingStart = 25;
 
 
-  })
-
-  // Castling 
-
+  if(!inCheck){
   // White Kingside
+
+  // White Queenside
 
   //Black Kingside
 
   //Black Queenside
+  }
 
   return legalMoves;
 };
 /*
-  // Regular Moves (non castling) 
-  for (var i = 0; i < moves.length; i++) {
-    // Move to empty square 
-    if (squares[moves[i]] === null) {
-      if (!is_attacked(king_squares, moves[i], player)[0]) {
-        legal_moves.push(make_move(location, moves[i]));
-      }
-    } else if (squares[moves[i]] !== "boundary" && squares[moves[i]].player !== player && !is_attacked(king_squares, moves[i], player)[0]) {
-    // Capture
-      legal_moves.push(make_move(location, moves[i]));
-    }
-  }
-
-  // Castling 
-  let white_kingside_rook = 98;
-  let white_queenside_rook = 91;
-  let black_kingside_rook = 28;
-  let black_queenside_rook = 21;
-  let white_king_start = 95;
-  let black_king_start = 25;
-
   // White Kingside
   if (!in_check) {
     if (castle_state[0] === 1 && squares[white_king_start + 1] === null && squares[white_king_start + 2] === null) {
@@ -278,11 +325,13 @@ return [attacking_pieces, checked_squares];
 }
 */
 
-const InCheckHandler = (legalMoves:Move[], kingLocation: number, attackedSquares:Number[]):Move[] =>{
-    
-
+const InCheckHandler = (
+  legalMoves: Move[],
+  kingLocation: number,
+  attackedSquares: Number[]
+): Move[] => {
   return legalMoves;
-}
+};
 /* Eliminate moves where king is still in check from originally checking piece.  Only for in check positions.
 function in_check_handler(legal_moves, king_location, attacked_squares) {
     for (var i = legal_moves.length - 1; i >= 0; i--) {
@@ -496,12 +545,16 @@ const GenBlackPawnMoves = (
   return legalMoves;
 };
 
-const IsAttacked = (board: Piece[], from:number, color:Color):[boolean, Piece[]] => {
+const IsAttacked = (
+  board: Piece[],
+  from: number,
+  color: Color
+): [boolean, Piece[]] => {
   let isAttacked = false;
-  let attackingPieces:Piece[] = new Array(0);
+  let attackingPieces: Piece[] = new Array(0);
 
   return [isAttacked, attackingPieces];
-}
+};
 /*
 function is_attacked(squares, square_location, player) {
 
