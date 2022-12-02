@@ -40,6 +40,9 @@ interface Move {
   fromSquare: number;
   toSquare: number;
   enPassantSquare:number | null;
+  promotedPiece: Piece | null;
+  rookStart:number | null;
+  rookEnd:number | null;
   piece: PieceType;
   type: MoveType
 }

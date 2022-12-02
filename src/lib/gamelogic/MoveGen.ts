@@ -1,5 +1,16 @@
 import { PieceType, Color, MoveType } from "../enums/GameEnums";
-import { ConvertToIndex, ConvertToXY, CoordinateChange, CreateMove, CreateMoveTwoSquare, CreatePiece, CreatePosition, SwitchTo120 } from "./GameHelpers";
+import {
+	ConvertToIndex,
+	ConvertToXY,
+	CoordinateChange,
+	CreateMove,
+	CreateMoveTwoSquare,
+	CreateCastleMove,
+	CreatePromotionMove,
+	CreatePiece,
+	CreatePosition,
+	SwitchTo120,
+} from "./GameHelpers";
 
 export const GenerateMoves = (position: Position): Move[] => {
 	let squares = position.squares;
@@ -11,7 +22,7 @@ export const GenerateMoves = (position: Position): Move[] => {
 
 	//only king can move in double check
 	if (attackingPieces.length > 1) {
-		return GenKingMoves(squares, kingLocation, position.player, inCheck);
+		return GenKingMoves(squares, kingLocation, position.player, inCheck, position.castleState);
 	}
 
 	for (let i = 0; i < 64; i++) {
@@ -34,7 +45,7 @@ export const GenerateMoves = (position: Position): Move[] => {
 					legalMoves.push(...GenPawnMoves(squares, i, position.enPassantSquare, squares[i].color));
 					break;
 				case PieceType.KING:
-					legalMoves.push(...GenKingMoves(squares, i, squares[i].color, inCheck));
+					legalMoves.push(...GenKingMoves(squares, i, squares[i].color, inCheck, position.castleState));
 					break;
 				case PieceType.EMPTY:
 				default:
@@ -68,7 +79,7 @@ const GenRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	return legalMoves;
 };
 
-const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boolean): Move[] => {
+const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boolean, castleState: number[]): Move[] => {
 	let legalMoves: Move[] = new Array(0);
 	let psuedoMoves: Move[] = new Array(0);
 	let [x, y] = ConvertToXY(from);
@@ -110,52 +121,43 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 
 	if (!inCheck) {
 		// White Kingside
+		if (castleState[0] === 1 && board[whiteKingStart + 1].type === PieceType.EMPTY && board[whiteKingStart + 2].type === PieceType.EMPTY) {
+			if (!IsAttacked(kingBoard, whiteKingStart + 1, color)[0] && !IsAttacked(kingBoard, whiteKingStart + 2, color)[0]) {
+				let [rookX, rookY] = ConvertToXY(whiteKingsideRook);
+				legalMoves.push(CreateCastleMove(color, from, ConvertToIndex(x + 2, y), whiteKingsideRook, ConvertToIndex(rookX - 2, rookY), PieceType.KING, MoveType.CASTLE));
+			}
+		}
 		// White Queenside
+		if (
+			(castleState[1] === 1 && board[whiteKingStart - 1].type === PieceType.EMPTY && board[whiteKingStart - 2].type === PieceType.EMPTY,
+			board[whiteKingStart - 3].type === PieceType.EMPTY)
+		) {
+			if (!IsAttacked(kingBoard, whiteKingStart - 1, color)[0] && !IsAttacked(kingBoard, whiteKingStart - 2, color)[0]) {
+				let [rookX, rookY] = ConvertToXY(whiteQueensideRook);
+				legalMoves.push(CreateCastleMove(color, from, ConvertToIndex(x - 2, y), whiteQueensideRook, ConvertToIndex(rookX + 3, rookY), PieceType.KING, MoveType.CASTLE));
+			}
+		}
 		//Black Kingside
+    if (castleState[2] === 1 && board[blackKingStart + 1].type === PieceType.EMPTY && board[blackKingStart + 2].type === PieceType.EMPTY) {
+      if (!IsAttacked(kingBoard, blackKingStart + 1, color)[0] && !IsAttacked(kingBoard, blackKingStart + 2, color)[0]) {
+				let [rookX, rookY] = ConvertToXY(blackKingsideRook);
+				legalMoves.push(CreateCastleMove(color, from, ConvertToIndex(x + 2, y), blackKingsideRook, ConvertToIndex(rookX - 2, rookY), PieceType.KING, MoveType.CASTLE));
+			}
+    }
 		//Black Queenside
+		if (
+			(castleState[1] === 1 && board[blackKingStart - 1].type === PieceType.EMPTY && board[blackKingStart - 2].type === PieceType.EMPTY,
+			board[blackKingStart - 3].type === PieceType.EMPTY)
+		) {
+			if (!IsAttacked(kingBoard, blackKingStart - 1, color)[0] && !IsAttacked(kingBoard, blackKingStart - 2, color)[0]) {
+				let [rookX, rookY] = ConvertToXY(blackQueensideRook);
+				legalMoves.push(CreateCastleMove(color, from, ConvertToIndex(x - 2, y), blackQueensideRook, ConvertToIndex(rookX + 3, rookY), PieceType.KING, MoveType.CASTLE));
+			}
+		}
 	}
 
 	return legalMoves;
 };
-/*
-  // White Kingside
-  if (!in_check) {
-    if (castle_state[0] === 1 && squares[white_king_start + 1] === null && squares[white_king_start + 2] === null) {
-      if (!is_attacked(squares, white_king_start + 1, player)[0] && !is_attacked(squares, white_king_start + 2, player)[0]) {
-        legal_moves.push(castle(white_king_start, white_king_start + 2, white_kingside_rook, white_kingside_rook - 2));
-      }
-    }
-    // White Queenside 
-    if (
-      castle_state[1] === 1 &&
-      squares[white_king_start - 1] === null &&
-      squares[white_king_start - 2] === null &&
-      squares[white_king_start - 3] === null
-    ) {
-      if (!is_attacked(squares, white_king_start - 1, player)[0] && !is_attacked(squares, white_king_start - 2, player)[0]) {
-        legal_moves.push(castle(white_king_start, white_king_start - 2, white_queenside_rook, white_queenside_rook + 3));
-      }
-    }
-    //Black Kingside
-    if (castle_state[2] === 1 && squares[black_king_start + 1] === null && squares[black_king_start + 2] === null) {
-      if (!is_attacked(squares, black_king_start + 1, player)[0] && !is_attacked(squares, black_king_start + 2, player)[0]) {
-        legal_moves.push(castle(black_king_start, black_king_start + 2, black_kingside_rook, black_kingside_rook - 2));
-      }
-    }
-    //Black Queenside 
-    if (
-      castle_state[3] === 1 &&
-      squares[black_king_start - 1] === null &&
-      squares[black_king_start - 2] === null &&
-      squares[black_king_start - 3] === null
-    ) {
-      if (!is_attacked(squares, black_king_start - 1, player)[0] && !is_attacked(squares, black_king_start - 2, player)[0]) {
-        legal_moves.push(castle(black_king_start, black_king_start - 2, black_queenside_rook, black_queenside_rook + 3));
-      }
-    }
-  }
-  return legal_moves;
-  */
 
 const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [Piece[], number[]] => {
 	let attackingPieces: Piece[] = new Array(0);
