@@ -396,8 +396,8 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	let diagDirections = [[1, 1],[-1, 1],[1, -1],[-1, -1]];
 	let straightDirections = [[0, 1],[0, -1],[-1, 0],[1, 0]];
 	let knightMoves = [[2,1],[2,-1],[1,2],[1,-2],[-2,1],[-2,-1],[-1,2],[-1,-2]];
+	let pawnMoves = (color === Color.WHITE) ? [[1, -1],[-1, -1]] : [[1, 1],[-1, 1]];
 	let kingMoves = [[1, 1],[-1, 1],[1, -1],[-1, -1],[0, 1],[0, -1],[-1, 0],[1, 0]];
-	let pawnMoves = (color === Color.WHITE) ? [[1, 1],[-1, 1]] : [[1, -1],[-1, -1]];
 
 	//check for bishop/queen attacks
 	diagDirections.forEach(direction => {
@@ -405,15 +405,17 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 		do {
 			x += direction[0];
 			y += direction[1];
-			switch (board[ConvertTo120Index(x, y)].type) {
-				case PieceType.BISHOP:
-				case PieceType.QUEEN:
-					isAttacked = true;
-					break;
-				default:
-					break;
+			if(board[ConvertTo120Index(x, y)].color !== color){
+				switch (board[ConvertTo120Index(x, y)].type) {
+					case PieceType.BISHOP:
+					case PieceType.QUEEN:
+						isAttacked = true;
+						break;
+					default:
+						break;
+				}
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color);
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY);
 	})
 		
 	// Check for rook/queen attacks
@@ -422,15 +424,17 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 		do {
 			x += direction[0];
 			y += direction[1];
-			switch (board[ConvertTo120Index(x, y)].type) {
-				case PieceType.ROOK:
-				case PieceType.QUEEN:
-					isAttacked = true;
-					break;
-				default:
-					break;
+			if(board[ConvertTo120Index(x, y)].color !== color){
+				switch (board[ConvertTo120Index(x, y)].type) {
+					case PieceType.ROOK:
+					case PieceType.QUEEN:
+						isAttacked = true;
+						break;
+					default:
+						break;
+				}
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color);
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY);
 	})
 
 	// Check if square is under attack by knights
@@ -438,36 +442,30 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 		let [x, y] = ConvertTo120XY(from);
 		x += direction[0];
 		y += direction[1];
-		if(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color){
-			switch (board[ConvertTo120Index(x, y)].type) {
-				case PieceType.KNIGHT:
-					isAttacked = true;
-					break;
-				default:
-					break;
-			}
+		if(board[ConvertTo120Index(x, y)].type === PieceType.KNIGHT && board[ConvertTo120Index(x, y)].color !== color){
+			isAttacked = true;
 		}
 	})
+
 	// Check if square is under attack by pawns
-	//for (i = 0; i < pawn_moves.length; i++) {
-	//    let end_piece = squares[pawn_moves[i]];
-	//    if (end_piece !== 'boundary' && end_piece !== null) {
-	//        if (end_piece.player !== player && end_piece.name === 'Pawn') {
-	//            isAttacked = true;
-	//            attackingPieces[pawn_moves[i]] = 'pawn_attack';
-	//        }
-	//    }
-	//}
+	pawnMoves.forEach(direction => {
+		let [x, y] = ConvertTo120XY(from);
+		x += direction[0];
+		y += direction[1];
+		if(board[ConvertTo120Index(x, y)].type === PieceType.PAWN && board[ConvertTo120Index(x, y)].color !== color){
+			isAttacked = true;
+		}
+	})
 
 	// Check if square is under attack by king.
-	//for (i = 0; i < king_moves.length; i++) {
-	//    let end_piece = squares[king_moves[i]];
-	//    if (end_piece !== 'boundary' && end_piece !== null) {
-	//        if (end_piece.player !== player && end_piece.name === 'King') {
-	//            isAttacked = true;
-	//        }
-	//    }
-	//}
+	kingMoves.forEach(direction => {
+		let [x, y] = ConvertTo120XY(from);
+		x += direction[0];
+		y += direction[1];
+		if(board[ConvertTo120Index(x, y)].type === PieceType.KING && board[ConvertTo120Index(x, y)].color !== color){
+			isAttacked = true;
+		}
+	})
 
 	return isAttacked;
 };
