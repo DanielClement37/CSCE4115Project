@@ -15,7 +15,8 @@ const ChessBoard = () => {
     let shade = "light-square";
     let moves: Move[] = GenerateMoves(currPosition);
     let isMove = "";
-    //console.log(moves.length);
+    
+    console.log(moves.length);
     currPosition.squares.forEach(function (sq: Piece) {
       if (index % 8 !== 0 && index !== 0) {
         shade = shade === "light-square" ? "dark-square" : "light-square";
