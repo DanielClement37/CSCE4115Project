@@ -393,20 +393,11 @@ const GenBlackPawnMoves = (board: Piece[], from: number, enPassantSquare: number
 // Return the squares that are under attack and the piece that is attacking
 const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	let isAttacked = false;
-	//let knight_moves = get_knight_moves(square_location, player);
-	//let king_moves = get_king_moves(square_location, player);
-	let diagDirections = [
-		[1, 1],
-		[-1, 1],
-		[1, -1],
-		[-1, -1],
-	];
-	let straightDirections = [
-		[0, 1],
-		[0, -1],
-		[-1, 0],
-		[1, 0],
-	];
+	let diagDirections = [[1, 1],[-1, 1],[1, -1],[-1, -1]];
+	let straightDirections = [[0, 1],[0, -1],[-1, 0],[1, 0]];
+	let knightMoves = [[2,1],[2,-1],[1,2],[1,-2],[-2,1],[-2,-1],[-1,2],[-1,-2]];
+	let kingMoves = [[1, 1],[-1, 1],[1, -1],[-1, -1],[0, 1],[0, -1],[-1, 0],[1, 0]];
+	let pawnMoves = (color === Color.WHITE) ? [[1, 1],[-1, 1]] : [[1, -1],[-1, -1]];
 
 	//check for bishop/queen attacks
 	diagDirections.forEach(direction => {
@@ -443,15 +434,20 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	})
 
 	// Check if square is under attack by knights
-	//for (i = 0; i < knight_moves.length; i++) {
-	//    let end_piece = squares[knight_moves[i]];
-	//    if (end_piece !== 'boundary' && end_piece !== null) {
-	//        if (end_piece.player !== player && end_piece.name === 'Knight') {
-	//            isAttacked = true;
-	//            attackingPieces[knight_moves[i]] = 'knight_attack';
-	//        }
-	//    }
-	//}
+	knightMoves.forEach(direction => {
+		let [x, y] = ConvertTo120XY(from);
+		x += direction[0];
+		y += direction[1];
+		if(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color){
+			switch (board[ConvertTo120Index(x, y)].type) {
+				case PieceType.KNIGHT:
+					isAttacked = true;
+					break;
+				default:
+					break;
+			}
+		}
+	})
 	// Check if square is under attack by pawns
 	//for (i = 0; i < pawn_moves.length; i++) {
 	//    let end_piece = squares[pawn_moves[i]];
