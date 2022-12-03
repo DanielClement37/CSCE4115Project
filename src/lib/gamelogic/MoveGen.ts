@@ -2,6 +2,8 @@ import { PieceType, Color, MoveType } from "../enums/GameEnums";
 import {
 	ConvertToIndex,
 	ConvertToXY,
+  ConvertTo120XY,
+  ConvertTo120Index,
 	CoordinateChange,
 	CreateMove,
 	CreateMoveTwoSquare,
@@ -10,6 +12,7 @@ import {
 	CreatePiece,
 	CreatePosition,
 	SwitchTo120,
+  InverseCoordinateChange
 } from "./GameHelpers";
 
 export const GenerateMoves = (position: Position): Move[] => {
@@ -85,10 +88,6 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 	let [x, y] = ConvertToXY(from);
 	//Take King off the board for calculating normal move attacking squares
 	let board120: Piece[] = SwitchTo120(board);
-	let kingBoard: Piece[] = new Array(0);
-	//kingBoard.push(...board120);
-	//kingBoard[from].type = PieceType.EMPTY;
-	//kingBoard[from].color = Color.NONE;
 
 	//get psuedo moves
 	psuedoMoves = [
@@ -106,10 +105,10 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 	psuedoMoves.forEach((move) => {
 		let toIndex120 = CoordinateChange(move.toSquare);
 		//Empty Squares
-		if (board120[toIndex120].type === PieceType.EMPTY && !IsAttacked(kingBoard, toIndex120, color)[0]) {
+		if (board120[toIndex120].type === PieceType.EMPTY && !IsAttacked(board120, toIndex120, color)) {
 			move.type = MoveType.QUIET;
 			legalMoves.push(move);
-		} else if (board120[toIndex120].type !== PieceType.BOUNDARY && board120[toIndex120].color !== color && !IsAttacked(kingBoard, toIndex120, color)[0]) {
+		} else if (board120[toIndex120].type !== PieceType.BOUNDARY && board120[toIndex120].color !== color && !IsAttacked(board120, toIndex120, color)) {
 			// Capture
 			move.type = MoveType.CAPTURE;
 			legalMoves.push(move);
@@ -128,7 +127,7 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 		// White Kingside
 		if ((color = Color.WHITE)) {
 			if (castleState[0] === 1 && board120[whiteKingStart + 1].type === PieceType.EMPTY && board120[whiteKingStart + 2].type === PieceType.EMPTY) {
-				if (!IsAttacked(kingBoard, whiteKingStart + 1, color)[0] && !IsAttacked(kingBoard, whiteKingStart + 2, color)[0]) {
+				if (!IsAttacked(board120, whiteKingStart + 1, color) && !IsAttacked(board120, whiteKingStart + 2, color)) {
 					let [rookX, rookY] = ConvertToXY(whiteKingsideRook);
 					legalMoves.push(
 						CreateCastleMove(color, from, ConvertToIndex(x + 2, y), whiteKingsideRook, ConvertToIndex(rookX - 2, rookY), PieceType.KING, MoveType.CASTLE)
@@ -142,7 +141,7 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 				board120[whiteKingStart - 2].type === PieceType.EMPTY &&
 				board120[whiteKingStart - 3].type === PieceType.EMPTY
 			) {
-				if (!IsAttacked(kingBoard, whiteKingStart - 1, color)[0] && !IsAttacked(kingBoard, whiteKingStart - 2, color)[0]) {
+				if (!IsAttacked(board120, whiteKingStart - 1, color) && !IsAttacked(board120, whiteKingStart - 2, color)) {
 					let [rookX, rookY] = ConvertToXY(whiteQueensideRook);
 					legalMoves.push(
 						CreateCastleMove(color, from, ConvertToIndex(x - 2, y), whiteQueensideRook, ConvertToIndex(rookX + 3, rookY), PieceType.KING, MoveType.CASTLE)
@@ -152,7 +151,7 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 		} else {
 			//Black Kingside
 			if (castleState[2] === 1 && board120[blackKingStart + 1].type === PieceType.EMPTY && board120[blackKingStart + 2].type === PieceType.EMPTY) {
-				if (!IsAttacked(kingBoard, blackKingStart + 1, color)[0] && !IsAttacked(kingBoard, blackKingStart + 2, color)[0]) {
+				if (!IsAttacked(board120, blackKingStart + 1, color) && !IsAttacked(board120, blackKingStart + 2, color)) {
 					let [rookX, rookY] = ConvertToXY(blackKingsideRook);
 					legalMoves.push(
 						CreateCastleMove(color, from, ConvertToIndex(x + 2, y), blackKingsideRook, ConvertToIndex(rookX - 2, rookY), PieceType.KING, MoveType.CASTLE)
@@ -166,7 +165,7 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 				board120[blackKingStart - 2].type === PieceType.EMPTY &&
 				board120[blackKingStart - 3].type === PieceType.EMPTY
 			) {
-				if (!IsAttacked(kingBoard, blackKingStart - 1, color)[0] && !IsAttacked(kingBoard, blackKingStart - 2, color)[0]) {
+				if (!IsAttacked(board120, blackKingStart - 1, color) && !IsAttacked(board120, blackKingStart - 2, color)) {
 					let [rookX, rookY] = ConvertToXY(blackQueensideRook);
 					legalMoves.push(
 						CreateCastleMove(color, from, ConvertToIndex(x - 2, y), blackQueensideRook, ConvertToIndex(rookX + 3, rookY), PieceType.KING, MoveType.CASTLE)
@@ -191,7 +190,7 @@ let up_left = left(1, forward(1, king_location, player), player);
 
 let pawn_moves = [up_right, up_left];
 let knight_moves = get_knight_moves(king_location, player);
-let diag_directions = [
+let diagDirections = [
 [1, 1],
 [-1, 1],
 [1, -1],
@@ -205,11 +204,11 @@ let straight_directions = [
 ];
 
 //get bishop/queen attack squares
-for (var i = 0; i < diag_directions.length; i++) {
-    let [attack_squares, attack_piece] = attacked_squares(squares, diag_directions[i], king_location, player, ["Queen", "Bishop"]);
+for (var i = 0; i < diagDirections.length; i++) {
+    let [attack_squares, attack_piece] = attacked_squares(squares, diagDirections[i], king_location, player, ["Queen", "Bishop"]);
     if (attack_piece !== null) {
         checked_squares = checked_squares.concat(attack_squares);
-        attacking_pieces.push(attack_piece);
+        attackingPieces.push(attack_piece);
     }
 }
 // Check for rook/queen attacks
@@ -217,7 +216,7 @@ for (i = 0; i < straight_directions.length; i++) {
     let [attack_squares, attack_piece] = attacked_squares(squares, straight_directions[i], king_location, player, ["Queen", "Rook"]);
     if (attack_piece !== null) {
         checked_squares = checked_squares.concat(attack_squares);
-        attacking_pieces.push(attack_piece);
+        attackingPieces.push(attack_piece);
     }
 }
 
@@ -227,7 +226,7 @@ for (i = 0; i < knight_moves.length; i++) {
     if (end_piece !== "boundary" && end_piece !== null) {
         if (end_piece.player !== player && end_piece.name === "Knight") {
             checked_squares = checked_squares.concat([knight_moves[i]]);
-            attacking_pieces.push(end_piece);
+            attackingPieces.push(end_piece);
         }
     }
 }
@@ -237,12 +236,12 @@ for (i = 0; i < pawn_moves.length; i++) {
     if (end_piece !== "boundary" && end_piece !== null) {
         if (end_piece.player !== player && end_piece.name === "Pawn") {
             checked_squares = checked_squares.concat([pawn_moves[i]]);
-            attacking_pieces.push(end_piece);
+            attackingPieces.push(end_piece);
         }
     }
 }
 
-return [attacking_pieces, checked_squares];
+return [attackingPieces, checked_squares];
 }
 */
 
@@ -391,77 +390,93 @@ const GenBlackPawnMoves = (board: Piece[], from: number, enPassantSquare: number
 	return legalMoves;
 };
 
-const IsAttacked = (board: Piece[], from: number, color: Color): [boolean, Piece[]] => {
+// Return the squares that are under attack and the piece that is attacking
+const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	let isAttacked = false;
-	let attackingPieces: Piece[] = new Array(0);
+	//let knight_moves = get_knight_moves(square_location, player);
+	//let king_moves = get_king_moves(square_location, player);
+	let diagDirections = [
+		[1, 1],
+		[-1, 1],
+		[1, -1],
+		[-1, -1],
+	];
+	let straightDirections = [
+		[0, 1],
+		[0, -1],
+		[-1, 0],
+		[1, 0],
+	];
 
-	return [isAttacked, attackingPieces];
+	//check for bishop/queen attacks
+	for (var i = 0; i < diagDirections.length; i++) {
+    let [x, y] = ConvertTo120XY(from);
+		do {
+      x+=diagDirections[i][0];
+      y+=diagDirections[i][1];
+      switch (board[ConvertTo120Index(x , y )].type) {
+        case PieceType.BISHOP:
+        case PieceType.QUEEN:
+          isAttacked = true;
+          //console.log(
+          //  [
+          //    `Attacked Square: ${from}`,
+          //    `Attacked By: ${ConvertTo120Index(x,y)}`,
+          //    `Direction: ${diagDirections[i]}`
+          //  ] 
+          //);
+          break;
+        default:
+          break;
+      }
+	  if(from === 94){
+		console.log([x,y] + "->" + ConvertTo120Index(x , y ));
+	  }
+    }while (
+			board[ConvertTo120Index(x , y )].type !== PieceType.BOUNDARY ||
+			board[ConvertTo120Index(x , y)].color === color
+		) 
+	}
+	//
+	// Check for rook/queen attacks
+	//for (i = 0; i < straight_directions.length; i++) {
+	//    attackingPiece = direction_isAttacked(squares, straight_directions[i], square_location, player, ['Queen', 'Rook']);
+	//    if (attackingPiece !== null) {
+	//        isAttacked = true;
+	//        attackingPieces[attackingPiece[0]] = attackingPiece[1];
+	//    }
+	//}
+
+	// Check if square is under attack by knights
+	//for (i = 0; i < knight_moves.length; i++) {
+	//    let end_piece = squares[knight_moves[i]];
+	//    if (end_piece !== 'boundary' && end_piece !== null) {
+	//        if (end_piece.player !== player && end_piece.name === 'Knight') {
+	//            isAttacked = true;
+	//            attackingPieces[knight_moves[i]] = 'knight_attack';
+	//        }
+	//    }
+	//}
+	// Check if square is under attack by pawns
+	//for (i = 0; i < pawn_moves.length; i++) {
+	//    let end_piece = squares[pawn_moves[i]];
+	//    if (end_piece !== 'boundary' && end_piece !== null) {
+	//        if (end_piece.player !== player && end_piece.name === 'Pawn') {
+	//            isAttacked = true;
+	//            attackingPieces[pawn_moves[i]] = 'pawn_attack';
+	//        }
+	//    }
+	//}
+
+	// Check if square is under attack by king.
+	//for (i = 0; i < king_moves.length; i++) {
+	//    let end_piece = squares[king_moves[i]];
+	//    if (end_piece !== 'boundary' && end_piece !== null) {
+	//        if (end_piece.player !== player && end_piece.name === 'King') {
+	//            isAttacked = true;
+	//        }
+	//    }
+	//}
+
+	return isAttacked;
 };
-/*
-function is_attacked(squares, square_location, player) {
-
-    let is_attacked = false;
-    let attacking_pieces = {};
-    let attacking_piece = null;
-
-    let up_right = right(1, forward(1, square_location, player), player);
-    let up_left = left(1, forward(1, square_location, player), player);
-
-    let pawn_moves = [up_right, up_left];
-    let knight_moves = get_knight_moves(square_location, player);
-    let king_moves = get_king_moves(square_location, player);
-    let diag_directions = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
-    let straight_directions = [[0, 1], [0, -1], [-1, 0], [1, 0]];
-
-    //check for bishop/queen attacks 
-    for (var i = 0; i < diag_directions.length; i++) {
-      attacking_piece = direction_is_attacked(squares, diag_directions[i], square_location, player, ['Queen', 'Bishop']);
-      if (attacking_piece !== null) {
-          is_attacked = true;
-          attacking_pieces[attacking_piece[0]] = attacking_piece[1];
-      }
-  }
-  // Check for rook/queen attacks
-  for (i = 0; i < straight_directions.length; i++) {
-      attacking_piece = direction_is_attacked(squares, straight_directions[i], square_location, player, ['Queen', 'Rook']);
-      if (attacking_piece !== null) {
-          is_attacked = true;
-          attacking_pieces[attacking_piece[0]] = attacking_piece[1];
-      }
-  }
-
-  // Check if square is under attack by knights
-  for (i = 0; i < knight_moves.length; i++) {
-      let end_piece = squares[knight_moves[i]];
-      if (end_piece !== 'boundary' && end_piece !== null) {
-          if (end_piece.player !== player && end_piece.name === 'Knight') {
-              is_attacked = true;
-              attacking_pieces[knight_moves[i]] = 'knight_attack';
-          }
-      }
-  }
-  // Check if square is under attack by pawns
-  for (i = 0; i < pawn_moves.length; i++) {
-      let end_piece = squares[pawn_moves[i]];
-      if (end_piece !== 'boundary' && end_piece !== null) {
-          if (end_piece.player !== player && end_piece.name === 'Pawn') {
-              is_attacked = true;
-              attacking_pieces[pawn_moves[i]] = 'pawn_attack';
-          }
-      }
-  }
-
-  // Check if square is under attack by king. 
-  for (i = 0; i < king_moves.length; i++) {
-      let end_piece = squares[king_moves[i]];
-      if (end_piece !== 'boundary' && end_piece !== null) {
-          if (end_piece.player !== player && end_piece.name === 'King') {
-              is_attacked = true;
-          }
-      }
-  }
-
-  return [is_attacked, attacking_pieces];
-}
-
-*/
