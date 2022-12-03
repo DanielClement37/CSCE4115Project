@@ -2,8 +2,8 @@ import { PieceType, Color, MoveType } from "../enums/GameEnums";
 import {
 	ConvertToIndex,
 	ConvertToXY,
-  ConvertTo120XY,
-  ConvertTo120Index,
+	ConvertTo120XY,
+	ConvertTo120Index,
 	CoordinateChange,
 	CreateMove,
 	CreateMoveTwoSquare,
@@ -12,7 +12,7 @@ import {
 	CreatePiece,
 	CreatePosition,
 	SwitchTo120,
-  InverseCoordinateChange
+	InverseCoordinateChange,
 } from "./GameHelpers";
 
 export const GenerateMoves = (position: Position): Move[] => {
@@ -409,43 +409,38 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	];
 
 	//check for bishop/queen attacks
-	for (var i = 0; i < diagDirections.length; i++) {
-    let [x, y] = ConvertTo120XY(from);
+	diagDirections.forEach(direction => {
+		let [x, y] = ConvertTo120XY(from);
 		do {
-      x+=diagDirections[i][0];
-      y+=diagDirections[i][1];
-      switch (board[ConvertTo120Index(x , y )].type) {
-        case PieceType.BISHOP:
-        case PieceType.QUEEN:
-          isAttacked = true;
-          //console.log(
-          //  [
-          //    `Attacked Square: ${from}`,
-          //    `Attacked By: ${ConvertTo120Index(x,y)}`,
-          //    `Direction: ${diagDirections[i]}`
-          //  ] 
-          //);
-          break;
-        default:
-          break;
-      }
-	  if(from === 94){
-		console.log([x,y] + "->" + ConvertTo120Index(x , y ));
-	  }
-    }while (
-			board[ConvertTo120Index(x , y )].type !== PieceType.BOUNDARY ||
-			board[ConvertTo120Index(x , y)].color === color
-		) 
-	}
-	//
+			x += direction[0];
+			y += direction[1];
+			switch (board[ConvertTo120Index(x, y)].type) {
+				case PieceType.BISHOP:
+				case PieceType.QUEEN:
+					isAttacked = true;
+					break;
+				default:
+					break;
+			}
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color);
+	})
+		
 	// Check for rook/queen attacks
-	//for (i = 0; i < straight_directions.length; i++) {
-	//    attackingPiece = direction_isAttacked(squares, straight_directions[i], square_location, player, ['Queen', 'Rook']);
-	//    if (attackingPiece !== null) {
-	//        isAttacked = true;
-	//        attackingPieces[attackingPiece[0]] = attackingPiece[1];
-	//    }
-	//}
+	straightDirections.forEach(direction => {
+		let [x, y] = ConvertTo120XY(from);
+		do {
+			x += direction[0];
+			y += direction[1];
+			switch (board[ConvertTo120Index(x, y)].type) {
+				case PieceType.ROOK:
+				case PieceType.QUEEN:
+					isAttacked = true;
+					break;
+				default:
+					break;
+			}
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY || board[ConvertTo120Index(x, y)].color === color);
+	})
 
 	// Check if square is under attack by knights
 	//for (i = 0; i < knight_moves.length; i++) {
