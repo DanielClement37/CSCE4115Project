@@ -21,7 +21,7 @@ export const CreateMove = (player: Color, fromSquare: number, toSquare: number, 
 	};
 };
 
-export const CreateMoveTwoSquare = (player: Color, fromSquare: number, toSquare: number, enPassantSquare: number, piece: PieceType, moveType: MoveType): Move => {
+export const CreateMoveTwoSquare = (player: Color, fromSquare: number, toSquare: number, enPassantSquare: number): Move => {
 	return {
 		player: player,
 		fromSquare: fromSquare,
@@ -30,8 +30,8 @@ export const CreateMoveTwoSquare = (player: Color, fromSquare: number, toSquare:
 		promotedPiece: null,
 		rookStart: null,
 		rookEnd: null,
-		piece: piece,
-		type: moveType,
+		piece: PieceType.PAWN,
+		type: MoveType.PAWN_MOVE_TWO,
 	};
 };
 
