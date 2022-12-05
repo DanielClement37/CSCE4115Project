@@ -61,20 +61,310 @@ export const GenerateMoves = (position: Position): Move[] => {
 
 const GenKnightMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
-	
+	let pseudoLegalMoves: Move[] = new Array(8);
+	let board120: Piece[] = SwitchTo120(board);
+	let [x, y] = ConvertToXY(from);
+
+	switch (x) {
+		case 0:
+			pseudoLegalMoves = [
+				CreateMove(color, from, ConvertToIndex(x + 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+			];
+			break;
+		case 1:
+			pseudoLegalMoves = [
+				CreateMove(color, from, ConvertToIndex(x + 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+			];
+			break;
+		case 6:
+			pseudoLegalMoves = [
+				CreateMove(color, from, ConvertToIndex(x + 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+			];
+			break;
+		case 7:
+			pseudoLegalMoves = [
+				CreateMove(color, from, ConvertToIndex(x - 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+			];
+			break;
+		default:
+			pseudoLegalMoves = [
+				CreateMove(color, from, ConvertToIndex(x + 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x + 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 2, y + 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 2, y - 1), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y + 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+				CreateMove(color, from, ConvertToIndex(x - 1, y - 2), PieceType.KNIGHT, MoveType.UNKNOWN),
+			];
+			break;
+	}
+
+	pseudoLegalMoves.forEach((move) => {
+		let toIndex120 = CoordinateChange(move.toSquare);
+		//if move is on the board check move type
+		if (board120[toIndex120].type !== PieceType.BOUNDARY) {
+			//if the knight color is not the same as the toSquare piece
+			if (board120[toIndex120].color !== color) {
+				//opponent king is in check
+				if (board120[toIndex120].type === PieceType.KING) {
+					move.type = MoveType.CHECK;
+					legalMoves.push(move);
+				}
+				//checks if move is quiet or capture
+				if (board120[toIndex120].type === PieceType.EMPTY) {
+					move.type = MoveType.QUIET;
+					legalMoves.push(move);
+				} else {
+					move.type = MoveType.CAPTURE;
+					legalMoves.push(move);
+				}
+			}
+		}
+	});
+
 	return legalMoves;
 };
 
 const GenDiagRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
-	
+	let [x, y] = ConvertToXY(from);
+	let fromType = board[from].type;
+
+	while (x < 7 && y < 7) {
+		x++;
+		y++;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+
+	[x, y] = ConvertToXY(from);
+
+	while (x < 7 && y > 0) {
+		x++;
+		y--;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+	[x, y] = ConvertToXY(from);
+
+	while (x > 0 && y < 7) {
+		x--;
+		y++;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+	[x, y] = ConvertToXY(from);
+
+	while (x > 0 && y > 0) {
+		x--;
+		y--;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
 
 	return legalMoves;
 };
 
 const GenRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
-	
+	let [x, y] = ConvertToXY(from);
+	let fromType = board[from].type;
+
+	while (x < 7) {
+		x++;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+	[x, y] = ConvertToXY(from);
+
+	while (x > 0) {
+		x--;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+	[x, y] = ConvertToXY(from);
+
+	while (y < 7) {
+		y++;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+	[x, y] = ConvertToXY(from);
+	while (y > 0) {
+		y--;
+		let index = ConvertToIndex(x, y);
+		let moveSquare = board[index];
+		let moveType: MoveType;
+		if (moveSquare.color === color) {
+			break;
+		}
+		switch (moveSquare.type) {
+			case PieceType.EMPTY:
+				moveType = MoveType.QUIET;
+				break;
+			case PieceType.KING:
+				moveType = MoveType.CHECK;
+				break;
+			default:
+				moveType = MoveType.CAPTURE;
+				break;
+		}
+		legalMoves.push(CreateMove(color, from, index, fromType, moveType));
+		if (moveSquare.type !== PieceType.EMPTY) {
+			break;
+		}
+	}
+
 	return legalMoves;
 };
 
