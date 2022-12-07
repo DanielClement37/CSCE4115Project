@@ -4,6 +4,7 @@ export const CreatePiece = (type: PieceType, color: Color): Piece => {
 	return {
 		type: type,
 		color: color,
+		hasMoved: false
 	};
 };
 

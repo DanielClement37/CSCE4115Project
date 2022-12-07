@@ -1,3 +1,4 @@
+
 enum PieceType {
   EMPTY = 0,
   PAWN = 1,
@@ -34,6 +35,7 @@ enum MoveType {
 interface Piece {
   type: PieceType;
   color: Color;
+  hasMoved: boolean;
 }
 
 interface Move {
