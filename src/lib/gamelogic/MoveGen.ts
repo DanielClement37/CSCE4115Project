@@ -16,7 +16,7 @@ export const GenerateMoves = (position: Position): Move[] => {
 	let squares = position.squares;
 	let legalMoves: Move[] = new Array(0);
 	let kingLocation = position.player === Color.WHITE ? position.kingLocations[0] : position.kingLocations[1];
-
+	let pinnedPieces = GetPinnedPieces();
 	let [attackingPieces, attackedSquares] = KingCheckSquares(SwitchTo120(squares), CoordinateChange(kingLocation), position.player);
 	let inCheck: Boolean = attackingPieces.length > 0 ? true : false;
 	//only king can move in double check
@@ -53,11 +53,12 @@ export const GenerateMoves = (position: Position): Move[] => {
 			}
 		}
 	}
-
-	console.log([attackingPieces, attackedSquares]);
+	console.log(kingLocation);
+	//console.log([attackingPieces, attackedSquares]);
 	if (attackingPieces.length > 0) {
 		legalMoves = InCheckHandler(legalMoves, kingLocation, attackedSquares);
 	}
+	console.log(legalMoves);
 	return legalMoves;
 };
 
@@ -505,12 +506,14 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 						break;
 					case PieceType.BISHOP:
 						attackedSquares.push(...tempAttackedSquares);
+						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.BISHOP);
 						console.log("Bishop Check");
 						
 						break;
 					case PieceType.QUEEN:
 						attackedSquares.push(...tempAttackedSquares);
+						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.QUEEN);
 						console.log("Queen diag Check");
 						break;
@@ -538,12 +541,14 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 						break;
 					case PieceType.ROOK:
 						attackedSquares.push(...tempAttackedSquares);
+						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.ROOK);
 						console.log("Rook Check");
 						
 						break;
 					case PieceType.QUEEN:
 						attackedSquares.push(...tempAttackedSquares);
+						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.QUEEN);
 						console.log("Queen straight Check");
 						break;
@@ -586,8 +591,9 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 const InCheckHandler = (legalMoves: Move[], kingLocation: number, attackedSquares: Number[]): Move[] => {
 	for (var i = legalMoves.length - 1; i >= 0; i--) {
 		let currentMove = legalMoves[i];
+		
 		//If king was not moved out of check and the moved piece did not block the check or eliminate the checking piece than remove the move
-		if (!attackedSquares.includes(currentMove.toSquare) && !attackedSquares.includes(currentMove.enPassantSquare as number) && currentMove.fromSquare !== kingLocation) {
+		if (!attackedSquares.includes(CoordinateChange(currentMove.toSquare)) && !attackedSquares.includes(currentMove.enPassantSquare as number) && currentMove.fromSquare !== kingLocation) {
 			legalMoves.splice(i, 1);
 		}
 	}
@@ -826,3 +832,7 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 
 	return isAttacked;
 };
+
+const GetPinnedPieces = () =>{
+	
+}
