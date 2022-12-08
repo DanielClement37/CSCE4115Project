@@ -39,14 +39,13 @@ interface Piece {
 }
 
 interface Move {
-  player: Color;
   fromSquare: number;
   toSquare: number;
   enPassantSquare:number | null;
   promotedPiece: Piece | null;
   rookStart:number | null;
   rookEnd:number | null;
-  piece: PieceType;
+  piece: Piece;
   type: MoveType
 }
 

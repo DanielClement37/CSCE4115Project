@@ -42,7 +42,7 @@ export const MakeMove = (position: Position, move: Move): Position => {
 	}
 
 	// Change King Location and Castling states
-	if (piece === PieceType.KING) {
+	if (piece.type === PieceType.KING) {
 		if (player === Color.WHITE) {
 			kingLocations[0] = to;
 			castleState[0] = 0;
@@ -55,7 +55,7 @@ export const MakeMove = (position: Position, move: Move): Position => {
 	}
 
 	// Change castling states for rook first moves
-    if(piece === PieceType.ROOK && !board[from].hasMoved)
+    if(piece.type === PieceType.ROOK && !board[from].hasMoved)
     {
         if (from === wkRook) {
             castleState[0] = 0;
@@ -94,9 +94,8 @@ export const MakeMove = (position: Position, move: Move): Position => {
     board[from].type = PieceType.EMPTY;
     board[from].color = Color.NONE;
 
-    board[to].type = move.piece;
-    board[to].color = player;
-    board[to].hasMoved = true;
+    piece.hasMoved = true;
+    board[to] = piece;
 
     (player === Color.WHITE)? player = Color.BLACK : player = Color.WHITE;
 

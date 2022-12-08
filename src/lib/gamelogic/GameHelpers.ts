@@ -8,9 +8,8 @@ export const CreatePiece = (type: PieceType, color: Color): Piece => {
 	};
 };
 
-export const CreateMove = (player: Color, fromSquare: number, toSquare: number, piece: PieceType, moveType: MoveType): Move => {
+export const CreateMove = (fromSquare: number, toSquare: number, piece: Piece, moveType: MoveType): Move => {
 	return {
-		player: player,
 		fromSquare: fromSquare,
 		toSquare: toSquare,
 		enPassantSquare: null,
@@ -22,23 +21,21 @@ export const CreateMove = (player: Color, fromSquare: number, toSquare: number, 
 	};
 };
 
-export const CreateMoveTwoSquare = (player: Color, fromSquare: number, toSquare: number, enPassantSquare: number): Move => {
+export const CreateMoveTwoSquare = (fromSquare: number, toSquare: number, enPassantSquare: number, piece: Piece): Move => {
 	return {
-		player: player,
 		fromSquare: fromSquare,
 		toSquare: toSquare,
 		enPassantSquare: enPassantSquare,
 		promotedPiece: null,
 		rookStart: null,
 		rookEnd: null,
-		piece: PieceType.PAWN,
+		piece: piece,
 		type: MoveType.PAWN_MOVE_TWO,
 	};
 };
 
-export const CreatePromotionMove = (player: Color, fromSquare: number, toSquare: number, enPassantSquare: number, promotedPiece: Piece, piece: PieceType, moveType: MoveType): Move => {
+export const CreatePromotionMove = ( fromSquare: number, toSquare: number, enPassantSquare: number, promotedPiece: Piece, piece: Piece, moveType: MoveType): Move => {
 	return {
-		player: player,
 		fromSquare: fromSquare,
 		toSquare: toSquare,
 		enPassantSquare: enPassantSquare,
@@ -50,9 +47,8 @@ export const CreatePromotionMove = (player: Color, fromSquare: number, toSquare:
 	};
 };
 
-export const CreateCastleMove = (player: Color, fromSquare: number, toSquare: number,rookStart: number,rookEnd: number, piece: PieceType, moveType: MoveType): Move => {
+export const CreateCastleMove = ( fromSquare: number, toSquare: number,rookStart: number,rookEnd: number, piece: Piece, moveType: MoveType): Move => {
 	return {
-		player: player,
 		fromSquare: fromSquare,
 		toSquare: toSquare,
 		enPassantSquare: null,
@@ -75,7 +71,7 @@ export const CreatePosition = (player: Color, squares: Piece[], castleState: num
 };
 
 export const CreateInitialGame = (): ChessGame => {
-	let position = ParseFen("8/8/8/8/1PQ1n2k/8/8/4K3 w - - 0 1");
+	let position = ParseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
 
 	return {
 		history: [position],
