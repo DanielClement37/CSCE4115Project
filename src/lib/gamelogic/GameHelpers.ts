@@ -71,7 +71,7 @@ export const CreatePosition = (player: Color, squares: Piece[], castleState: num
 };
 
 export const CreateInitialGame = (): ChessGame => {
-	let position = ParseFen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1");
+	let position = ParseFen("4k3/8/8/8/5p2/4p3/3K4/8 w - - 0 1");
 
 	return {
 		history: [position],
@@ -308,3 +308,7 @@ export const ConvertTo120XY = (index: number): [x: number, y: number] => {
 export const ConvertTo120Index = (x: number, y: number): number => {
 	return x + y * 10;
 };
+
+export const GetOpponentColor = (color: Color):Color =>{
+	return color === Color.WHITE ? Color.BLACK : Color.WHITE
+}

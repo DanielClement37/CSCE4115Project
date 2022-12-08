@@ -1,5 +1,6 @@
 import React from "react";
 import { PieceType, Color } from "../../../../lib/enums/GameEnums";
+import { CoordinateChange } from "../../../../lib/gamelogic/GameHelpers";
 import './ChessSquare.css'
 
 interface SquareProps {
@@ -15,7 +16,7 @@ const ChessSquare = (props: SquareProps) => { //TODO: find way to make this less
 
   //TODO: this will be select Tile function
   const CheckSquareHandler = (event: React.MouseEvent<HTMLElement>) => {
-    console.log(props.index);
+    console.log(CoordinateChange(props.index));
   };  
 
   switch (props.type) {

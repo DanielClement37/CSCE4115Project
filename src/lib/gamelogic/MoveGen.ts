@@ -9,6 +9,7 @@ import {
 	CreateMoveTwoSquare,
 	CreateCastleMove,
 	SwitchTo120,
+	GetOpponentColor,
 } from "./GameHelpers";
 
 export const GenerateMoves = (position: Position): Move[] => {
@@ -53,10 +54,10 @@ export const GenerateMoves = (position: Position): Move[] => {
 		}
 	}
 
+	console.log([attackingPieces, attackedSquares]);
 	if (attackingPieces.length > 0) {
 		legalMoves = InCheckHandler(legalMoves, kingLocation, attackedSquares);
 	}
-	console.log(legalMoves);
 	return legalMoves;
 };
 
@@ -466,7 +467,6 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [PieceType[], number[]] => {
 	let attackingPieces: PieceType[] = new Array(0);
 	let attackedSquares: number[] = new Array(0);
-
 	let diagDirections = [
 		[1, 1],
 		[-1, 1],
@@ -490,57 +490,70 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 		[-1, -2],
 	];
 	let pawnMoves =color === Color.WHITE? [[1, -1],[-1, -1],]: [[1, 1],[-1, 1]];
-
-	console.log(board);
 	
 	//check for bishop/queen attacks
 	diagDirections.forEach((direction) => {
+		let tempAttackedSquares:number[] = [];
 		let [x, y] = ConvertTo120XY(kingLocation);
-		do {
+		do{
 			x += direction[0];
 			y += direction[1];
-			if (board[ConvertTo120Index(x, y)].color !== color) {
-				switch (board[ConvertTo120Index(x, y)].type) {
+			if(board[ConvertTo120Index(x, y)].color !== color){
+				switch(board[ConvertTo120Index(x, y)].type){
+					case PieceType.EMPTY:
+						tempAttackedSquares.push(ConvertTo120Index(x, y));
+						break;
 					case PieceType.BISHOP:
-						attackedSquares.push(ConvertTo120Index(x, y));
+						attackedSquares.push(...tempAttackedSquares);
 						attackingPieces.push(PieceType.BISHOP);
 						console.log("Bishop Check");
+						
 						break;
 					case PieceType.QUEEN:
-						attackedSquares.push(ConvertTo120Index(x, y));
+						attackedSquares.push(...tempAttackedSquares);
 						attackingPieces.push(PieceType.QUEEN);
-						console.log("Queen  Diag Check");
+						console.log("Queen diag Check");
 						break;
 					default:
 						break;
 				}
+			}else{
+				break;
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color === color);
+		}while(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY )
 	});
+
 
 	// Check for rook/queen attacks
 	straightDirections.forEach((direction) => {
+		let tempAttackedSquares:number[] = [];
 		let [x, y] = ConvertTo120XY(kingLocation);
-		do {
+		do{
 			x += direction[0];
 			y += direction[1];
-			if (board[ConvertTo120Index(x, y)].color !== color) {
-				switch (board[ConvertTo120Index(x, y)].type) {
+			if(board[ConvertTo120Index(x, y)].color !== color){
+				switch(board[ConvertTo120Index(x, y)].type){
+					case PieceType.EMPTY:
+						tempAttackedSquares.push(ConvertTo120Index(x, y));
+						break;
 					case PieceType.ROOK:
-						attackedSquares.push(ConvertTo120Index(x, y));
+						attackedSquares.push(...tempAttackedSquares);
 						attackingPieces.push(PieceType.ROOK);
 						console.log("Rook Check");
+						
 						break;
 					case PieceType.QUEEN:
-						attackedSquares.push(ConvertTo120Index(x, y));
+						attackedSquares.push(...tempAttackedSquares);
 						attackingPieces.push(PieceType.QUEEN);
-						console.log("Queen Straight Check");
+						console.log("Queen straight Check");
 						break;
 					default:
 						break;
 				}
+			}else{
+				break;
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color === color);
+		}while(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY )
 	});
 
 	// Check if square is under attack by knights
@@ -548,19 +561,18 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 		let [x, y] = ConvertTo120XY(kingLocation);
 		x += direction[0];
 		y += direction[1];
-		if (board[ConvertTo120Index(x, y)].type === PieceType.KNIGHT && board[ConvertTo120Index(x, y)].color !== color) {
+		if (board[ConvertTo120Index(x, y)].type === PieceType.KNIGHT && board[ConvertTo120Index(x, y)].color === GetOpponentColor(color)) {
 			attackedSquares.push(ConvertTo120Index(x, y));
 			attackingPieces.push(PieceType.KNIGHT);
 			console.log("Knight Check");
 		}
-	});
-
+	})
 	// Check if square is under attack by pawns
 	pawnMoves.forEach((direction) => {
 		let [x, y] = ConvertTo120XY(kingLocation);
 		x += direction[0];
 		y += direction[1];
-		if (board[ConvertTo120Index(x, y)].type === PieceType.PAWN && board[ConvertTo120Index(x, y)].color !== color) {
+		if (board[ConvertTo120Index(x, y)].type === PieceType.PAWN && board[ConvertTo120Index(x, y)].color === GetOpponentColor(color)) {
 			attackedSquares.push(ConvertTo120Index(x, y));
 			attackingPieces.push(PieceType.PAWN);
 			console.log("Pawn Check");
@@ -760,7 +772,7 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 						break;
 				}
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color === color);
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color !== GetOpponentColor(color));
 	});
 
 	// Check for rook/queen attacks
@@ -779,7 +791,7 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 						break;
 				}
 			}
-		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color !== color);
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY && board[ConvertTo120Index(x, y)].color !== GetOpponentColor(color));
 	});
 
 	// Check if square is under attack by knights
@@ -787,7 +799,7 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 		let [x, y] = ConvertTo120XY(from);
 		x += direction[0];
 		y += direction[1];
-		if (board[ConvertTo120Index(x, y)].type === PieceType.KNIGHT && board[ConvertTo120Index(x, y)].color !== color) {
+		if (board[ConvertTo120Index(x, y)].type === PieceType.KNIGHT && board[ConvertTo120Index(x, y)].color === color) {
 			isAttacked = true;
 		}
 	});
