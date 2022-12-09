@@ -34,17 +34,64 @@ export const CreateMoveTwoSquare = (fromSquare: number, toSquare: number, enPass
 	};
 };
 
-export const CreatePromotionMove = ( fromSquare: number, toSquare: number, enPassantSquare: number, promotedPiece: Piece, piece: Piece, moveType: MoveType): Move => {
-	return {
+export const CreatePromotionMoves = ( fromSquare: number, toSquare: number, color:Color, piece: Piece): Move[] => {
+	return [{
 		fromSquare: fromSquare,
 		toSquare: toSquare,
-		enPassantSquare: enPassantSquare,
-		promotedPiece: promotedPiece,
+		enPassantSquare: null,
+		promotedPiece: {
+			type: PieceType.KNIGHT,
+			color: color,
+			hasMoved:true
+		},
 		rookStart: null,
 		rookEnd: null,
 		piece: piece,
-		type: moveType,
-	};
+		type: MoveType.PROMOTION,
+	},
+	{
+		fromSquare: fromSquare,
+		toSquare: toSquare,
+		enPassantSquare: null,
+		promotedPiece: {
+			type: PieceType.BISHOP,
+			color: color,
+			hasMoved:true
+		},
+		rookStart: null,
+		rookEnd: null,
+		piece: piece,
+		type: MoveType.PROMOTION,
+	},
+	{
+		fromSquare: fromSquare,
+		toSquare: toSquare,
+		enPassantSquare: null,
+		promotedPiece: {
+			type: PieceType.ROOK,
+			color: color,
+			hasMoved:true
+		},
+		rookStart: null,
+		rookEnd: null,
+		piece: piece,
+		type: MoveType.PROMOTION,
+	},
+	{
+		fromSquare: fromSquare,
+		toSquare: toSquare,
+		enPassantSquare: null,
+		promotedPiece: {
+			type: PieceType.QUEEN,
+			color: color,
+			hasMoved:true
+		},
+		rookStart: null,
+		rookEnd: null,
+		piece: piece,
+		type: MoveType.PROMOTION,
+	}
+];
 };
 
 export const CreateCastleMove = ( fromSquare: number, toSquare: number,rookStart: number,rookEnd: number, piece: Piece, moveType: MoveType): Move => {
@@ -71,7 +118,7 @@ export const CreatePosition = (player: Color, squares: Piece[], castleState: num
 };
 
 export const CreateInitialGame = (): ChessGame => {
-	let position = ParseFen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - ");
+	let position = ParseFen("rnb2k1r/pp1Pbppp/8/2p5/2B5/r6r/PPP1NnPP/RNBQK2R w KQ c6 1 8  ");
 
 	return {
 		history: [position],
