@@ -38,14 +38,14 @@ export const GenerateMoves = (position: Position): Move[] => {
 					//legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.QUEEN:
-					//egalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
+					//legalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
 					//legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.PAWN:
-					legalMoves.push(...GenPawnMoves(squares, i, position.enPassantSquare, squares[i].color));
+					//legalMoves.push(...GenPawnMoves(squares, i, position.enPassantSquare, squares[i].color));
 					break;
 				case PieceType.KING:
-					//legalMoves.push(...GenKingMoves(squares, i, squares[i].color, inCheck, position.castleState));
+					legalMoves.push(...GenKingMoves(squares, i, squares[i].color, inCheck, position.castleState));
 					break;
 				case PieceType.EMPTY:
 				default:
@@ -54,7 +54,7 @@ export const GenerateMoves = (position: Position): Move[] => {
 		}
 	}
 
-	legalMoves = PinnedPieceHandler(squares, legalMoves,kingLocation,position.player);
+	legalMoves = PinnedPieceHandler(squares, legalMoves, kingLocation, position.player);
 
 	//console.log(kingLocation);
 	//console.log([attackingPieces, attackedSquares]);
@@ -74,50 +74,50 @@ const GenKnightMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	switch (x) {
 		case 0:
 			pseudoLegalMoves = [
-				CreateMove( from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
 			];
 			break;
 		case 1:
 			pseudoLegalMoves = [
-				CreateMove( from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
 			];
 			break;
 		case 6:
 			pseudoLegalMoves = [
-				CreateMove( from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
 			];
 			break;
 		case 7:
 			pseudoLegalMoves = [
-				CreateMove( from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
 			];
 			break;
 		default:
 			pseudoLegalMoves = [
-				CreateMove( from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
-				CreateMove( from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x + 1, y - 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y + 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 2, y - 1), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y + 2), board[from], MoveType.UNKNOWN),
+				CreateMove(from, ConvertToIndex(x - 1, y - 2), board[from], MoveType.UNKNOWN),
 			];
 			break;
 	}
@@ -173,7 +173,7 @@ const GenDiagRayMoves = (board: Piece[], from: number, color: Color): Move[] => 
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -201,7 +201,7 @@ const GenDiagRayMoves = (board: Piece[], from: number, color: Color): Move[] => 
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -228,7 +228,7 @@ const GenDiagRayMoves = (board: Piece[], from: number, color: Color): Move[] => 
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -255,7 +255,7 @@ const GenDiagRayMoves = (board: Piece[], from: number, color: Color): Move[] => 
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -314,7 +314,7 @@ const GenRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -340,7 +340,7 @@ const GenRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -365,7 +365,7 @@ const GenRayMoves = (board: Piece[], from: number, color: Color): Move[] => {
 				moveType = MoveType.CAPTURE;
 				break;
 		}
-		legalMoves.push(CreateMove( from, index, fromPiece, moveType));
+		legalMoves.push(CreateMove(from, index, fromPiece, moveType));
 		if (moveSquare.type !== PieceType.EMPTY) {
 			break;
 		}
@@ -382,14 +382,14 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 
 	//get psuedo moves
 	psuedoMoves = [
-		CreateMove( from, ConvertToIndex(x + 1, y + 1), board[from], MoveType.UNKNOWN), //down - right
-		CreateMove( from, ConvertToIndex(x + 1, y), board[from], MoveType.UNKNOWN), //right
-		CreateMove( from, ConvertToIndex(x + 1, y - 1), board[from], MoveType.UNKNOWN), //up right
-		CreateMove( from, ConvertToIndex(x, y + 1), board[from], MoveType.UNKNOWN), //down
-		CreateMove( from, ConvertToIndex(x, y - 1), board[from], MoveType.UNKNOWN), //up
-		CreateMove( from, ConvertToIndex(x - 1, y + 1), board[from], MoveType.UNKNOWN), //down left
-		CreateMove( from, ConvertToIndex(x - 1, y), board[from], MoveType.UNKNOWN), //left
-		CreateMove( from, ConvertToIndex(x - 1, y - 1), board[from], MoveType.UNKNOWN), //up left
+		CreateMove(from, ConvertToIndex(x + 1, y + 1), board[from], MoveType.UNKNOWN), //down - right
+		CreateMove(from, ConvertToIndex(x + 1, y), board[from], MoveType.UNKNOWN), //right
+		CreateMove(from, ConvertToIndex(x + 1, y - 1), board[from], MoveType.UNKNOWN), //up right
+		CreateMove(from, ConvertToIndex(x, y + 1), board[from], MoveType.UNKNOWN), //down
+		CreateMove(from, ConvertToIndex(x, y - 1), board[from], MoveType.UNKNOWN), //up
+		CreateMove(from, ConvertToIndex(x - 1, y + 1), board[from], MoveType.UNKNOWN), //down left
+		CreateMove(from, ConvertToIndex(x - 1, y), board[from], MoveType.UNKNOWN), //left
+		CreateMove(from, ConvertToIndex(x - 1, y - 1), board[from], MoveType.UNKNOWN), //up left
 	];
 
 	// Regular Moves (non castling)
@@ -418,10 +418,19 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 		// White Kingside
 		if ((color = Color.WHITE)) {
 			if (castleState[0] === 1 && board120[whiteKingStart + 1].type === PieceType.EMPTY && board120[whiteKingStart + 2].type === PieceType.EMPTY) {
+				console.log("test1");
 				if (!IsAttacked(board120, whiteKingStart + 1, color) && !IsAttacked(board120, whiteKingStart + 2, color)) {
+					console.log("test2");
 					let [rookX, rookY] = ConvertToXY(whiteKingsideRook);
 					legalMoves.push(
-						CreateCastleMove( from, ConvertToIndex(x + 2, y), whiteKingsideRook, ConvertToIndex(rookX - 2, rookY), board[whiteKingStart], MoveType.CASTLE)
+						CreateCastleMove(
+							from,
+							ConvertToIndex(x + 2, y),
+							whiteKingsideRook,
+							ConvertToIndex(rookX - 2, rookY),
+							board[whiteKingStart],
+							MoveType.CASTLE
+						)
 					);
 				}
 			}
@@ -435,7 +444,14 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 				if (!IsAttacked(board120, whiteKingStart - 1, color) && !IsAttacked(board120, whiteKingStart - 2, color)) {
 					let [rookX, rookY] = ConvertToXY(whiteQueensideRook);
 					legalMoves.push(
-						CreateCastleMove( from, ConvertToIndex(x - 2, y), whiteQueensideRook, ConvertToIndex(rookX + 3, rookY), board[whiteKingStart], MoveType.CASTLE)
+						CreateCastleMove(
+							from,
+							ConvertToIndex(x - 2, y),
+							whiteQueensideRook,
+							ConvertToIndex(rookX + 3, rookY),
+							board[whiteKingStart],
+							MoveType.CASTLE
+						)
 					);
 				}
 			}
@@ -445,7 +461,14 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 				if (!IsAttacked(board120, blackKingStart + 1, color) && !IsAttacked(board120, blackKingStart + 2, color)) {
 					let [rookX, rookY] = ConvertToXY(blackKingsideRook);
 					legalMoves.push(
-						CreateCastleMove( from, ConvertToIndex(x + 2, y), blackKingsideRook, ConvertToIndex(rookX - 2, rookY),board[blackKingStart], MoveType.CASTLE)
+						CreateCastleMove(
+							from,
+							ConvertToIndex(x + 2, y),
+							blackKingsideRook,
+							ConvertToIndex(rookX - 2, rookY),
+							board[blackKingStart],
+							MoveType.CASTLE
+						)
 					);
 				}
 			}
@@ -459,7 +482,14 @@ const GenKingMoves = (board: Piece[], from: number, color: Color, inCheck: Boole
 				if (!IsAttacked(board120, blackKingStart - 1, color) && !IsAttacked(board120, blackKingStart - 2, color)) {
 					let [rookX, rookY] = ConvertToXY(blackQueensideRook);
 					legalMoves.push(
-						CreateCastleMove( from, ConvertToIndex(x - 2, y), blackQueensideRook, ConvertToIndex(rookX + 3, rookY),board[blackKingStart], MoveType.CASTLE)
+						CreateCastleMove(
+							from,
+							ConvertToIndex(x - 2, y),
+							blackQueensideRook,
+							ConvertToIndex(rookX + 3, rookY),
+							board[blackKingStart],
+							MoveType.CASTLE
+						)
 					);
 				}
 			}
@@ -493,17 +523,26 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 		[-1, 2],
 		[-1, -2],
 	];
-	let pawnMoves =color === Color.WHITE? [[1, -1],[-1, -1],]: [[1, 1],[-1, 1]];
-	
+	let pawnMoves =
+		color === Color.WHITE
+			? [
+					[1, -1],
+					[-1, -1],
+			  ]
+			: [
+					[1, 1],
+					[-1, 1],
+			  ];
+
 	//check for bishop/queen attacks
 	diagDirections.forEach((direction) => {
-		let tempAttackedSquares:number[] = [];
+		let tempAttackedSquares: number[] = [];
 		let [x, y] = ConvertTo120XY(kingLocation);
-		do{
+		do {
 			x += direction[0];
 			y += direction[1];
-			if(board[ConvertTo120Index(x, y)].color !== color){
-				switch(board[ConvertTo120Index(x, y)].type){
+			if (board[ConvertTo120Index(x, y)].color !== color) {
+				switch (board[ConvertTo120Index(x, y)].type) {
 					case PieceType.EMPTY:
 						tempAttackedSquares.push(ConvertTo120Index(x, y));
 						break;
@@ -512,7 +551,7 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.BISHOP);
 						console.log("Bishop Check");
-						
+
 						break;
 					case PieceType.QUEEN:
 						attackedSquares.push(...tempAttackedSquares);
@@ -523,22 +562,23 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 					default:
 						break;
 				}
-			}else{
+			} else {
 				break;
 			}
-		}while(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY )
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY);
 	});
-
 
 	// Check for rook/queen attacks
 	straightDirections.forEach((direction) => {
-		let tempAttackedSquares:number[] = [];
+		let tempAttackedSquares: number[] = [];
 		let [x, y] = ConvertTo120XY(kingLocation);
-		do{
+		do {
 			x += direction[0];
 			y += direction[1];
-			if(board[ConvertTo120Index(x, y)].color !== color){
-				switch(board[ConvertTo120Index(x, y)].type){
+			let test = ConvertTo120Index(x, y)
+			console.log(test);
+			if (board[ConvertTo120Index(x, y)].color !== color) {
+				switch (board[ConvertTo120Index(x, y)].type) {
 					case PieceType.EMPTY:
 						tempAttackedSquares.push(ConvertTo120Index(x, y));
 						break;
@@ -547,7 +587,7 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 						attackedSquares.push(ConvertTo120Index(x, y));
 						attackingPieces.push(PieceType.ROOK);
 						console.log("Rook Check");
-						
+
 						break;
 					case PieceType.QUEEN:
 						attackedSquares.push(...tempAttackedSquares);
@@ -558,10 +598,10 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 					default:
 						break;
 				}
-			}else{
+			} else {
 				break;
 			}
-		}while(board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY )
+		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY);
 	});
 
 	// Check if square is under attack by knights
@@ -574,7 +614,7 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 			attackingPieces.push(PieceType.KNIGHT);
 			console.log("Knight Check");
 		}
-	})
+	});
 	// Check if square is under attack by pawns
 	pawnMoves.forEach((direction) => {
 		let [x, y] = ConvertTo120XY(kingLocation);
@@ -594,9 +634,13 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 const InCheckHandler = (legalMoves: Move[], kingLocation: number, attackedSquares: Number[]): Move[] => {
 	for (var i = legalMoves.length - 1; i >= 0; i--) {
 		let currentMove = legalMoves[i];
-		
+
 		//If king was not moved out of check and the moved piece did not block the check or eliminate the checking piece than remove the move
-		if (!attackedSquares.includes(CoordinateChange(currentMove.toSquare)) && !attackedSquares.includes(currentMove.enPassantSquare as number) && currentMove.fromSquare !== kingLocation) {
+		if (
+			!attackedSquares.includes(CoordinateChange(currentMove.toSquare)) &&
+			!attackedSquares.includes(currentMove.enPassantSquare as number) &&
+			currentMove.fromSquare !== kingLocation
+		) {
 			legalMoves.splice(i, 1);
 		}
 	}
@@ -610,57 +654,63 @@ const GenPawnMoves = (board: Piece[], from: number, enPassantSquare: number | nu
 const GenWhitePawnMoves = (board: Piece[], from: number, enPassantSquare: number | null, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
 	let [x120, y120] = ConvertTo120XY(CoordinateChange(from));
-	let [x,y] = ConvertToXY(from);
-	let board120 = SwitchTo120(board)
+	let [x, y] = ConvertToXY(from);
+	let board120 = SwitchTo120(board);
 	//Two Forward
-	if(!board[from].hasMoved 
-		&& board120[ConvertTo120Index(x120,y120 -1)].type === PieceType.EMPTY 
-		&& board120[ConvertTo120Index(x120,y120-2)].type === PieceType.EMPTY){
-		legalMoves.push(CreateMoveTwoSquare(from,ConvertToIndex(x,y-2),ConvertToIndex(x,y-1),board[from]));
+	if (
+		!board[from].hasMoved &&
+		board120[ConvertTo120Index(x120, y120 - 1)].type === PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120, y120 - 2)].type === PieceType.EMPTY
+	) {
+		legalMoves.push(CreateMoveTwoSquare(from, ConvertToIndex(x, y - 2), ConvertToIndex(x, y - 1), board[from]));
 	}
 
 	//One Forward
-	if(board120[ConvertTo120Index(x120,y120-1)].type === PieceType.EMPTY){
+	if (board120[ConvertTo120Index(x120, y120 - 1)].type === PieceType.EMPTY) {
 		//Promtion Move
-		if(board120[ConvertTo120Index(x120,y120 -2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x,y-1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120, y120 - 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x, y - 1), color, board[from]));
+		} else {
 			//normal move
-			legalMoves.push(CreateMove(from, ConvertToIndex(x,y-1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x, y - 1), board[from], MoveType.QUIET));
 		}
 	}
 
 	//Attack left
-	if(board120[ConvertTo120Index(x120 -1,y120-1)].type !== PieceType.EMPTY 
-	&& board120[ConvertTo120Index(x120 -1,y120-1)].color === GetOpponentColor(color)){
+	if (
+		board120[ConvertTo120Index(x120 - 1, y120 - 1)].type !== PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120 - 1, y120 - 1)].color === GetOpponentColor(color)
+	) {
 		//Promtion attack
-		if(board120[ConvertTo120Index(x120 -1,y120 -2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x-1,y-1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120 - 1, y120 - 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x - 1, y - 1), color, board[from]));
+		} else {
 			//normal attack
-			legalMoves.push(CreateMove(from, ConvertToIndex(x-1,y-1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x - 1, y - 1), board[from], MoveType.QUIET));
 		}
 	}
 	//Attack left
-	if(board120[ConvertTo120Index(x120+1,y120-1)].type !== PieceType.EMPTY 
-	&& board120[ConvertTo120Index(x120+1,y120-1)].color === GetOpponentColor(color)){
+	if (
+		board120[ConvertTo120Index(x120 + 1, y120 - 1)].type !== PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120 + 1, y120 - 1)].color === GetOpponentColor(color)
+	) {
 		//Promtion attack
-		if(board120[ConvertTo120Index(x120+1,y120 -2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x+1,y-1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120 + 1, y120 - 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x + 1, y - 1), color, board[from]));
+		} else {
 			//normal attack
-			legalMoves.push(CreateMove(from, ConvertToIndex(x+1,y-1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x + 1, y - 1), board[from], MoveType.QUIET));
 		}
 	}
 
 	//Enpassant Left
 	//TODO: TEST THIS LATER
-	if(enPassantSquare === ConvertToIndex(x-1, y-1)){
+	if (enPassantSquare === ConvertToIndex(x - 1, y - 1)) {
 		//legalMoves.push(CreateMove(from, ConvertToIndex(x-1,y-1),board[from],MoveType.ENPASSANT));
 	}
 
 	//Enpassant Right
-	if(enPassantSquare === ConvertToIndex(x+1, y-1)){
+	if (enPassantSquare === ConvertToIndex(x + 1, y - 1)) {
 		//legalMoves.push(CreateMove(from, ConvertToIndex(x+1,y-1),board[from],MoveType.ENPASSANT));
 	}
 
@@ -670,57 +720,63 @@ const GenWhitePawnMoves = (board: Piece[], from: number, enPassantSquare: number
 const GenBlackPawnMoves = (board: Piece[], from: number, enPassantSquare: number | null, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
 	let [x120, y120] = ConvertTo120XY(CoordinateChange(from));
-	let [x,y] = ConvertToXY(from);
-	let board120 = SwitchTo120(board)
+	let [x, y] = ConvertToXY(from);
+	let board120 = SwitchTo120(board);
 	//Two Forward
-	if(!board[from].hasMoved 
-		&& board120[ConvertTo120Index(x120,y120 +1)].type === PieceType.EMPTY 
-		&& board120[ConvertTo120Index(x120,y120+2)].type === PieceType.EMPTY){
-		legalMoves.push(CreateMoveTwoSquare(from,ConvertToIndex(x,y+2),ConvertToIndex(x,y+1),board[from]));
+	if (
+		!board[from].hasMoved &&
+		board120[ConvertTo120Index(x120, y120 + 1)].type === PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120, y120 + 2)].type === PieceType.EMPTY
+	) {
+		legalMoves.push(CreateMoveTwoSquare(from, ConvertToIndex(x, y + 2), ConvertToIndex(x, y + 1), board[from]));
 	}
 
 	//One Forward
-	if(board120[ConvertTo120Index(x120,y120+1)].type === PieceType.EMPTY){
+	if (board120[ConvertTo120Index(x120, y120 + 1)].type === PieceType.EMPTY) {
 		//Promtion Move
-		if(board120[ConvertTo120Index(x120,y120 +2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x,y+1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120, y120 + 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x, y + 1), color, board[from]));
+		} else {
 			//normal move
-			legalMoves.push(CreateMove(from, ConvertToIndex(x,y+1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x, y + 1), board[from], MoveType.QUIET));
 		}
 	}
 
 	//Attack left
-	if(board120[ConvertTo120Index(x120 -1,y120+1)].type !== PieceType.EMPTY 
-	&& board120[ConvertTo120Index(x120 -1,y120+1)].color === GetOpponentColor(color)){
+	if (
+		board120[ConvertTo120Index(x120 - 1, y120 + 1)].type !== PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120 - 1, y120 + 1)].color === GetOpponentColor(color)
+	) {
 		//Promtion attack
-		if(board120[ConvertTo120Index(x120 -1,y120 +2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x-1,y+1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120 - 1, y120 + 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x - 1, y + 1), color, board[from]));
+		} else {
 			//normal attack
-			legalMoves.push(CreateMove(from, ConvertToIndex(x-1,y+1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x - 1, y + 1), board[from], MoveType.QUIET));
 		}
 	}
 	//Attack left
-	if(board120[ConvertTo120Index(x120+1,y120+1)].type !== PieceType.EMPTY 
-	&& board120[ConvertTo120Index(x120+1,y120+1)].color === GetOpponentColor(color)){
+	if (
+		board120[ConvertTo120Index(x120 + 1, y120 + 1)].type !== PieceType.EMPTY &&
+		board120[ConvertTo120Index(x120 + 1, y120 + 1)].color === GetOpponentColor(color)
+	) {
 		//Promtion attack
-		if(board120[ConvertTo120Index(x120+1,y120 +2)].type === PieceType.BOUNDARY){
-			legalMoves.push(...CreatePromotionMoves(from,ConvertToIndex(x+1,y+1),color,board[from]));
-		}else{
+		if (board120[ConvertTo120Index(x120 + 1, y120 + 2)].type === PieceType.BOUNDARY) {
+			legalMoves.push(...CreatePromotionMoves(from, ConvertToIndex(x + 1, y + 1), color, board[from]));
+		} else {
 			//normal attack
-			legalMoves.push(CreateMove(from, ConvertToIndex(x+1,y+1),board[from], MoveType.QUIET));
+			legalMoves.push(CreateMove(from, ConvertToIndex(x + 1, y + 1), board[from], MoveType.QUIET));
 		}
 	}
 
 	//Enpassant Left
 	//TODO: TEST THIS LATER
-	if(enPassantSquare === ConvertToIndex(x-1, y+1)){
+	if (enPassantSquare === ConvertToIndex(x - 1, y + 1)) {
 		//legalMoves.push(CreateMove(from, ConvertToIndex(x-1,y-1),board[from],MoveType.ENPASSANT));
 	}
 
 	//Enpassant Right
-	if(enPassantSquare === ConvertToIndex(x+1, y+1)){
+	if (enPassantSquare === ConvertToIndex(x + 1, y + 1)) {
 		//legalMoves.push(CreateMove(from, ConvertToIndex(x+1,y-1),board[from],MoveType.ENPASSANT));
 	}
 
@@ -752,7 +808,16 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 		[-1, 2],
 		[-1, -2],
 	];
-	let pawnMoves = color === Color.WHITE ? [[1, -1],[-1, -1],]: [[1, 1],[-1, 1],];
+	let pawnMoves =
+		color === Color.WHITE
+			? [
+					[1, -1],
+					[-1, -1],
+			  ]
+			: [
+					[1, 1],
+					[-1, 1],
+			  ];
 	let kingMoves = [
 		[1, 1],
 		[-1, 1],
@@ -835,13 +900,13 @@ const IsAttacked = (board: Piece[], from: number, color: Color): boolean => {
 	return isAttacked;
 };
 
-const PinnedPieceHandler = (board:Piece[],legalMoves:Move[], kingLocation:number, color:Color):Move[] =>{
+const PinnedPieceHandler = (board: Piece[], legalMoves: Move[], kingLocation: number, color: Color): Move[] => {
 	for (var i = legalMoves.length - 1; i >= 0; i--) {
 		let currentMove = legalMoves[i];
 		let tempBoard: Piece[] = board.slice();
 
 		//swap pieces
-		tempBoard[currentMove.toSquare] = currentMove.piece
+		tempBoard[currentMove.toSquare] = currentMove.piece;
 		tempBoard[currentMove.fromSquare] = CreatePiece(PieceType.EMPTY, Color.NONE);
 
 		//KingCheckSquares()
@@ -849,10 +914,9 @@ const PinnedPieceHandler = (board:Piece[],legalMoves:Move[], kingLocation:number
 		let inCheck: boolean = attackingPieces.length > 0 ? true : false;
 
 		//if(incheck) remove current move from legal moves
-		if(inCheck){
+		if (inCheck) {
 			legalMoves.splice(i, 1);
 		}
-		
 	}
 	return legalMoves;
-}
+};

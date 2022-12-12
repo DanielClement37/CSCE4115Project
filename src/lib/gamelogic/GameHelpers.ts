@@ -118,7 +118,7 @@ export const CreatePosition = (player: Color, squares: Piece[], castleState: num
 };
 
 export const CreateInitialGame = (): ChessGame => {
-	let position = ParseFen("rnb2k1r/pp1Pbppp/8/2p5/2B5/r6r/PPP1NnPP/RNBQK2R w KQ c6 1 8  ");
+	let position = ParseFen("4k3/8/8/8/8/8/8/4K2R w K - 0 1 ");
 
 	return {
 		history: [position],
