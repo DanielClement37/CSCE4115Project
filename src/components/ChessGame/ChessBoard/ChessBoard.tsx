@@ -3,6 +3,7 @@ import { GameContext } from "../../../utils/context";
 import ChessSquare from "./ChessSquare/ChessSquare";
 import "./ChessBoard.css";
 import { GenerateMoves } from "../../../lib/gamelogic/MoveGen";
+import { FindShortestNumKnightMoves } from "../../../lib/gamelogic/Move";
 
 const ChessBoard = () => {
   const { state } = useContext(GameContext);
@@ -14,6 +15,8 @@ const ChessBoard = () => {
     let index = 0;
     let shade = "light-square";
     let moves: Move[] = GenerateMoves(currPosition);
+    let minKnightMoves = FindShortestNumKnightMoves(currPosition.squares, 45, 34, currPosition.player);
+    //console.log(minKnightMoves); 
     let isMove = "";
     
     console.log(moves.length);

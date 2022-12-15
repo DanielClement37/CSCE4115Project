@@ -29,20 +29,20 @@ export const GenerateMoves = (position: Position): Move[] => {
 		if (position.player === squares[i].color) {
 			switch (squares[i].type) {
 				case PieceType.KNIGHT:
-					//legalMoves.push(...GenKnightMoves(squares, i, squares[i].color));
+					legalMoves.push(...GenKnightMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.BISHOP:
-					//legalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
+					legalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.ROOK:
-					//legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
+					legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.QUEEN:
-					//legalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
-					//legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
+					legalMoves.push(...GenDiagRayMoves(squares, i, squares[i].color));
+					legalMoves.push(...GenRayMoves(squares, i, squares[i].color));
 					break;
 				case PieceType.PAWN:
-					//legalMoves.push(...GenPawnMoves(squares, i, position.enPassantSquare, squares[i].color));
+					legalMoves.push(...GenPawnMoves(squares, i, position.enPassantSquare, squares[i].color));
 					break;
 				case PieceType.KING:
 					legalMoves.push(...GenKingMoves(squares, i, squares[i].color, inCheck, position.castleState));
@@ -61,11 +61,11 @@ export const GenerateMoves = (position: Position): Move[] => {
 	if (attackingPieces.length > 0) {
 		legalMoves = InCheckHandler(legalMoves, kingLocation, attackedSquares);
 	}
-	console.log(legalMoves);
+	//console.log(legalMoves);
 	return legalMoves;
 };
 
-const GenKnightMoves = (board: Piece[], from: number, color: Color): Move[] => {
+ export const GenKnightMoves = (board: Piece[], from: number, color: Color): Move[] => {
 	let legalMoves: Move[] = new Array(0);
 	let pseudoLegalMoves: Move[] = new Array(8);
 	let board120: Piece[] = SwitchTo120(board);
@@ -575,8 +575,6 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 		do {
 			x += direction[0];
 			y += direction[1];
-			let test = ConvertTo120Index(x, y)
-			console.log(test);
 			if (board[ConvertTo120Index(x, y)].color !== color) {
 				switch (board[ConvertTo120Index(x, y)].type) {
 					case PieceType.EMPTY:
@@ -603,6 +601,7 @@ const KingCheckSquares = (board: Piece[], kingLocation: number, color: Color): [
 			}
 		} while (board[ConvertTo120Index(x, y)].type !== PieceType.BOUNDARY);
 	});
+	
 
 	// Check if square is under attack by knights
 	knightMoves.forEach((direction) => {

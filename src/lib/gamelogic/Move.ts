@@ -1,5 +1,6 @@
 import { PieceType, Color, MoveType } from "../enums/GameEnums";
 import { CreatePosition } from "./GameHelpers";
+import { GenKnightMoves } from "./MoveGen";
 
 export const MakeMove = (position: Position, move: Move): Position => {
 	let from = move.fromSquare;
@@ -15,9 +16,9 @@ export const MakeMove = (position: Position, move: Move): Position => {
 
 	let board = position.squares.slice();
 	let piece = move.piece;
-    let kingLocations = position.kingLocations;
+	let kingLocations = position.kingLocations;
 	let castleState = position.castleState;
-    let enPassantSquare = null;
+	let enPassantSquare = null;
 
 	//remove the en passantable pawn from board
 	if (move.type === MoveType.ENPASSANT) {
@@ -55,81 +56,153 @@ export const MakeMove = (position: Position, move: Move): Position => {
 	}
 
 	// Change castling states for rook first moves
-    if(piece.type === PieceType.ROOK && !board[from].hasMoved)
-    {
-        if (from === wkRook) {
-            castleState[0] = 0;
-        }
-        else if (from === wqRook) {
-            castleState[1] = 0;
-        }
-        else if (from === bkRook) {
-            castleState[2] = 0;
-        }
-        else if (from === bqRook) {
-            castleState[3] = 0;
-        }
-    }
+	if (piece.type === PieceType.ROOK && !board[from].hasMoved) {
+		if (from === wkRook) {
+			castleState[0] = 0;
+		} else if (from === wqRook) {
+			castleState[1] = 0;
+		} else if (from === bkRook) {
+			castleState[2] = 0;
+		} else if (from === bqRook) {
+			castleState[3] = 0;
+		}
+	}
 	// Change castling states for rooks being captured
-    if(board[to].type === PieceType.ROOK && move.type === MoveType.CAPTURE){
-        if (to === wkRook) {
-            castleState[0] = 0;
-        }
-        else if (to === wqRook) {
-            castleState[1] = 0;
-        }
-        else if (to === bkRook) {
-            castleState[2] = 0;
-        }
-        else if (to === bqRook) {
-            castleState[3] = 0;
-        }
-    }
+	if (board[to].type === PieceType.ROOK && move.type === MoveType.CAPTURE) {
+		if (to === wkRook) {
+			castleState[0] = 0;
+		} else if (to === wqRook) {
+			castleState[1] = 0;
+		} else if (to === bkRook) {
+			castleState[2] = 0;
+		} else if (to === bqRook) {
+			castleState[3] = 0;
+		}
+	}
 
-    //Change material Balance
+	//Promotion
+	//if (move.promotion_piece !== null) {
+	//    piece = move.promotion_piece;
+	//    if (piece.player === 'white') {
+	//        material_balance = material_balance + piece_scores[piece.name] - 1;
+	//    }
+	//    else {
+	//        material_balance = material_balance - piece_scores[piece.name] + 1;
+	//    }
+	//}
 
-    //Handle promotion
+	//Material balance
+	//let location_score = square_values[piece.name][end] - square_values[piece.name][start];
+	//if (piece.player === 'white') {
+	//    material_balance = material_balance + location_score;
+	//}
+	//else {
+	//    material_balance = material_balance - location_score;
+	//}
 
-    //swap piece to new location
-    board[from].type = PieceType.EMPTY;
-    board[from].color = Color.NONE;
+	//swap piece to new location
+	board[from].type = PieceType.EMPTY;
+	board[from].color = Color.NONE;
 
-    piece.hasMoved = true;
-    board[to] = piece;
+	piece.hasMoved = true;
+	board[to] = piece;
 
-    (player === Color.WHITE)? player = Color.BLACK : player = Color.WHITE;
+	player === Color.WHITE ? (player = Color.BLACK) : (player = Color.WHITE);
 
-	return CreatePosition(player,board,castleState,kingLocations,enPassantSquare);
+	return CreatePosition(player, board, castleState, kingLocations, enPassantSquare);
 };
 
-/*
+/**
+ *
+ *
+ * @export
+ * @class Queue
+ */
+export class Queue<T> {
+	list: T[];
+
+	/**
+	 *Creates an instance of Queue.
+	 * @memberof Queue
+	 */
+	constructor() {
+		this.list = [];
+	}
+
+	/**
+	 * @param {*} item
+	 * @return {Queue}
+	 * @memberof Queue
+	 */
+	enqueue(item: T): Queue<T> {
+		this.list = [...this.list, item];
+		return this;
+	}
+
+	/**
+	 *
+	 *
+	 * @return {Queue}
+	 * @memberof Queue
+	 */
+	dequeue(): T {
+		const item = this.list[0];
+		this.list = this.list.slice(1);
+		return item;
+	}
+
+	/**
+	 * @return {boolean}
+	 * @memberof Queue
+	 */
+	isEmpty(): boolean {
+		return this.list.length === 0;
+	}
+
+	/**
+	 * @return {number}
+	 * @memberof Queue
+	 */
+	getLength(): number {
+		return this.list.length;
+	}
+
+	/**
+	 * @return {string}
+	 * @memberof Queue
+	 */
+	toString(): string {
+		return this.list.toString();
+	}
+}
+
+export const FindShortestNumKnightMoves = ( board:Piece[], from: number, destination: number, currPlayer: Color): number =>  {
+    let q = new Queue<[Move , number]>();
+    let visited:number[] = [];
+    let dist = 1;
+    let startMoves = GenKnightMoves(board, from, currPlayer);
+
+    startMoves.forEach(move =>{
+        q.enqueue([move, dist])
+    })
+
+    while(!q.isEmpty()){
+        let currMove = q.dequeue();
+        if(currMove[0].fromSquare === destination){
+            return currMove[1];
+        }
+
+        if(!visited.includes(currMove[0].fromSquare)){
+            // mark the current node as visited
+            visited.push(currMove[0].fromSquare)
+            // check for all eight possible movements for a knight
+            // and enqueue each valid movement
+            let moves = GenKnightMoves(board, currMove[0].toSquare, currPlayer);
+            moves.forEach(move =>{
+                q.enqueue([move, dist+1]);
+            })
+        }
+    }
     
-   
-
-    //Promotion
-    if (move.promotion_piece !== null) {
-        piece = move.promotion_piece;
-        if (piece.player === 'white') {
-            material_balance = material_balance + piece_scores[piece.name] - 1;
-        }
-        else {
-            material_balance = material_balance - piece_scores[piece.name] + 1;
-        }
-    }
-
-    let location_score = square_values[piece.name][end] - square_values[piece.name][start];
-    if (piece.player === 'white') {
-        material_balance = material_balance + location_score;
-    }
-    else {
-        material_balance = material_balance - location_score;
-    }
-
-    squares[start] = null;
-    squares[end] = piece;
-    piece.has_moved = true;
-
-    (player === 'white') ? player = 'black' : player = 'white';
-
-    return new Position(player, squares, king_locations, castle_state, material_balance, en_passant_square);
-    */
+    return -1;
+};
